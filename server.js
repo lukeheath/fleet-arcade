@@ -37,6 +37,4 @@ app.get('{*path}', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Fleet Arcade running on port ${port}`);
-  console.log(`FLEET_URL: ${FLEET_URL}`);
-  console.log(`FLEET_API_TOKEN: ${FLEET_API_TOKEN ? `set (${FLEET_API_TOKEN.length} chars)` : 'NOT SET'}`);
 });
