@@ -5,6 +5,8 @@ services:
     buildCommand: npm install && npm run build
     startCommand: node server.js
     envVars:
+      - key: NODE_VERSION
+        value: "24"
       - key: FLEET_URL
         value: https://dogfood.fleetdm.com
       - key: FLEET_API_TOKEN
