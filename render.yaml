@@ -2,7 +2,7 @@ services:
   - type: web
     name: fleet-arcade
     runtime: node
-    buildCommand: npm ci && npm run build
+    buildCommand: npm install && npm run build
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
