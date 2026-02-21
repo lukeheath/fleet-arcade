@@ -21,7 +21,9 @@ app.use('/api', async (req, res) => {
   });
   res.status(resp.status);
   resp.headers.forEach((v, k) => {
-    if (k !== 'transfer-encoding') res.setHeader(k, v);
+    if (!['transfer-encoding', 'content-encoding', 'content-length'].includes(k)) {
+      res.setHeader(k, v);
+    }
   });
   const body = await resp.arrayBuffer();
   res.send(Buffer.from(body));
