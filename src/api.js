@@ -1,7 +1,4 @@
-const API_TOKEN = import.meta.env.VITE_FLEET_API_TOKEN;
-
 const headers = {
-  Authorization: `Bearer ${API_TOKEN}`,
   'Content-Type': 'application/json',
 };
 

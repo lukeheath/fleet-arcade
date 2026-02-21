@@ -7,7 +7,5 @@ services:
     envVars:
       - key: FLEET_URL
         value: https://dogfood.fleetdm.com
-      - key: VITE_FLEET_API_TOKEN
+      - key: FLEET_API_TOKEN
         sync: false
-      - key: VITE_FLEET_URL
-        value: https://dogfood.fleetdm.com

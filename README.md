@@ -13,8 +13,8 @@ npm install
 Create a `.env` file with your Fleet credentials:
 
 ```
-VITE_FLEET_API_TOKEN=your_api_token_here
-VITE_FLEET_URL=https://your-fleet-instance.example.com
+FLEET_API_TOKEN=your_api_token_here
+FLEET_URL=https://your-fleet-instance.example.com
 ```
 
 Run the dev server:
@@ -25,7 +25,10 @@ npm run dev
 
 ## Deploy to Render
 
-The included `render.yaml` configures a Render Web Service. Set the `VITE_FLEET_API_TOKEN` environment variable in the Render dashboard (it's marked `sync: false` so it won't be committed).
+The included `render.yaml` configures a Render Web Service. Set these environment variables in the Render dashboard:
+
+- `FLEET_URL` — your Fleet instance URL (e.g. `https://fleet.example.com`)
+- `FLEET_API_TOKEN` — your Fleet API token (marked `sync: false` so it won't be committed)
 
 ```bash
 npm run build   # Vite production build

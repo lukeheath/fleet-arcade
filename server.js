@@ -8,12 +8,20 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const FLEET_URL = process.env.FLEET_URL || 'https://dogfood.fleetdm.com';
+const FLEET_API_TOKEN = process.env.FLEET_API_TOKEN;
 
-// Proxy /api requests to Fleet
+// Proxy /api requests to Fleet, injecting auth header server-side
 app.use('/api', createProxyMiddleware({
   target: FLEET_URL,
   changeOrigin: true,
   secure: true,
+  on: {
+    proxyReq: (proxyReq) => {
+      if (FLEET_API_TOKEN) {
+        proxyReq.setHeader('Authorization', `Bearer ${FLEET_API_TOKEN}`);
+      }
+    },
+  },
 }));
 
 // Serve built static files
