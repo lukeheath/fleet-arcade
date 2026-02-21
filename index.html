@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fleet Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- CRT overlay effect -->
+  <div id="crt-overlay"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="hud-left">
+      <span class="hud-title">FLEET ARCADE</span>
+      <span class="hud-subtitle">GALACTIC FLEET COMMAND</span>
+    </div>
+    <div id="hud-center">
+      <span id="hud-hosts">HOSTS: ---</span>
+      <span id="hud-online" class="online">ONLINE: ---</span>
+      <span id="hud-issues" class="warning">ISSUES: ---</span>
+    </div>
+    <div id="hud-right">
+      <span id="hud-time"></span>
+    </div>
+  </div>
+
+  <!-- Fleet legend at the bottom -->
+  <div id="fleet-legend"></div>
+
+  <!-- Loading screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <h1>FLEET ARCADE</h1>
+      <p class="subtitle">GALACTIC FLEET COMMAND</p>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-text" id="loading-text">ESTABLISHING UPLINK...</p>
+      <p class="blink">INSERT COIN</p>
+    </div>
+  </div>
+
+  <!-- Host detail panel -->
+  <div id="detail-panel" class="hidden">
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip" class="hidden"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

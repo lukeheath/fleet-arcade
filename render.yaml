@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: fleet-arcade
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: FLEET_URL
+        value: https://dogfood.fleetdm.com
+      - key: VITE_FLEET_API_TOKEN
+        sync: false
+      - key: VITE_FLEET_URL
+        value: https://dogfood.fleetdm.com

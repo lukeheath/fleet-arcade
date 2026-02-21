@@ -1,0 +1,431 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --arcade-green: #39ff14;
+  --arcade-cyan: #00ffff;
+  --arcade-magenta: #ff00ff;
+  --arcade-yellow: #ffff00;
+  --arcade-red: #ff3333;
+  --arcade-orange: #ff8800;
+  --arcade-blue: #4488ff;
+  --arcade-dim: #336633;
+  --panel-bg: rgba(0, 8, 20, 0.92);
+  --panel-border: var(--arcade-cyan);
+  --font-arcade: 'Press Start 2P', monospace;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: var(--font-arcade);
+  color: var(--arcade-green);
+  cursor: crosshair;
+}
+
+#game-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* CRT scanline overlay */
+#crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+#crt-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+/* HUD */
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 24px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+#hud span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.hud-title {
+  font-size: 14px !important;
+  color: var(--arcade-cyan);
+  text-shadow: 0 0 10px var(--arcade-cyan), 0 0 20px var(--arcade-cyan);
+  margin-bottom: 4px;
+}
+
+.hud-subtitle {
+  font-size: 7px !important;
+  color: var(--arcade-magenta);
+  text-shadow: 0 0 8px var(--arcade-magenta);
+}
+
+#hud-center {
+  text-align: center;
+}
+
+#hud-center span {
+  margin: 2px 0;
+}
+
+#hud-center .online {
+  color: var(--arcade-green);
+  text-shadow: 0 0 8px var(--arcade-green);
+}
+
+#hud-center .warning {
+  color: var(--arcade-yellow);
+  text-shadow: 0 0 8px var(--arcade-yellow);
+}
+
+#hud-right {
+  text-align: right;
+  color: var(--arcade-cyan);
+  text-shadow: 0 0 6px var(--arcade-cyan);
+}
+
+/* Fleet legend */
+#fleet-legend {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 24px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  pointer-events: none;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+.legend-toggle {
+  pointer-events: all;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s, opacity 0.3s;
+}
+
+.legend-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.legend-stealth {
+  opacity: 0.5;
+}
+
+.legend-stealth .legend-swatch {
+  box-shadow: none;
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  box-shadow: 0 0 6px currentColor;
+  transition: background-color 0.3s;
+}
+
+/* Loading screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1s ease;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content h1 {
+  font-family: var(--font-arcade);
+  font-size: 36px;
+  color: var(--arcade-cyan);
+  text-shadow: 0 0 20px var(--arcade-cyan), 0 0 40px var(--arcade-cyan), 0 0 80px rgba(0, 255, 255, 0.3);
+  margin-bottom: 12px;
+}
+
+.loading-content .subtitle {
+  font-size: 10px;
+  color: var(--arcade-magenta);
+  text-shadow: 0 0 10px var(--arcade-magenta);
+  margin-bottom: 40px;
+  letter-spacing: 4px;
+}
+
+.loading-bar-container {
+  width: 300px;
+  height: 8px;
+  border: 1px solid var(--arcade-cyan);
+  margin: 0 auto 20px;
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--arcade-cyan);
+  box-shadow: 0 0 10px var(--arcade-cyan);
+  transition: width 0.3s ease;
+}
+
+.loading-text {
+  font-size: 8px;
+  color: var(--arcade-green);
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+}
+
+.blink {
+  font-size: 12px;
+  color: var(--arcade-yellow);
+  text-shadow: 0 0 10px var(--arcade-yellow);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Detail panel */
+#detail-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 500;
+  width: min(680px, 90vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--panel-bg);
+  border: 2px solid var(--panel-border);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.05);
+  padding: 0;
+  font-size: 9px;
+  letter-spacing: 1px;
+  image-rendering: pixelated;
+}
+
+#detail-panel.hidden {
+  display: none;
+}
+
+#detail-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+#detail-panel::-webkit-scrollbar-track {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+#detail-panel::-webkit-scrollbar-thumb {
+  background: var(--arcade-cyan);
+  box-shadow: 0 0 6px var(--arcade-cyan);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.detail-hostname {
+  font-size: 12px;
+  color: var(--arcade-cyan);
+  text-shadow: 0 0 10px var(--arcade-cyan);
+}
+
+.detail-close {
+  font-size: 14px;
+  color: var(--arcade-red);
+  cursor: pointer;
+  text-shadow: 0 0 8px var(--arcade-red);
+  pointer-events: all;
+  padding: 4px 8px;
+}
+
+.detail-close:hover {
+  color: #ff6666;
+  text-shadow: 0 0 12px var(--arcade-red);
+}
+
+.detail-body {
+  padding: 16px 20px;
+}
+
+.detail-section {
+  margin-bottom: 16px;
+}
+
+.detail-section-title {
+  font-size: 9px;
+  color: var(--arcade-magenta);
+  text-shadow: 0 0 6px var(--arcade-magenta);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 0, 255, 0.2);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  line-height: 1.6;
+}
+
+.detail-label {
+  color: #667788;
+}
+
+.detail-value {
+  color: var(--arcade-green);
+  text-align: right;
+  max-width: 60%;
+  word-break: break-all;
+}
+
+.status-online {
+  color: var(--arcade-green);
+  text-shadow: 0 0 8px var(--arcade-green);
+}
+
+.status-offline {
+  color: var(--arcade-red);
+  text-shadow: 0 0 8px var(--arcade-red);
+}
+
+.vuln-critical {
+  color: var(--arcade-red);
+  text-shadow: 0 0 6px var(--arcade-red);
+}
+
+.vuln-warning {
+  color: var(--arcade-yellow);
+  text-shadow: 0 0 6px var(--arcade-yellow);
+}
+
+.vuln-ok {
+  color: var(--arcade-green);
+}
+
+/* Ship detail mini canvas */
+.detail-ship-display {
+  text-align: center;
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+}
+
+.detail-ship-display canvas {
+  image-rendering: pixelated;
+}
+
+/* Tooltip */
+#tooltip {
+  position: fixed;
+  z-index: 200;
+  background: var(--panel-bg);
+  border: 1px solid var(--arcade-cyan);
+  padding: 8px 12px;
+  font-size: 8px;
+  color: var(--arcade-green);
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+#tooltip.hidden {
+  display: none;
+}
+
+.tooltip-name {
+  color: var(--arcade-cyan);
+  font-size: 9px;
+  margin-bottom: 4px;
+}
+
+.tooltip-info {
+  color: #88aacc;
+  line-height: 1.8;
+}
+
+/* Backdrop when detail panel is open */
+#detail-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 499;
+  background: rgba(0, 0, 0, 0.6);
+}
