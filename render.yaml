@@ -6,7 +6,7 @@ services:
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
-        value: "24"
+        value: 24.10.0
       - key: FLEET_URL
         value: https://dogfood.fleetdm.com
       - key: FLEET_API_TOKEN
