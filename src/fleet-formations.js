@@ -28,6 +28,9 @@ export class FleetFormation {
     // Label display
     this.labelAlpha = 0;
 
+    // Entry fade: ships fade in as they approach the visible area
+    this.entryAlpha = 0;
+
     // Visibility: smooth transition between full and stealthed
     this.displayAlpha = 1;
     this.targetAlpha = 1;
@@ -61,8 +64,8 @@ export class FleetFormation {
     // Project backward from a random point on screen
     const enterX = Math.random() * this.canvasWidth;
     const enterY = Math.random() * this.canvasHeight;
-    // Place just far enough back to be off-screen, plus the extra stagger
-    const dist = 150 + extraDist;
+    // Place well off-screen so fleets always fly in smoothly
+    const dist = 400 + extraDist;
     const backAngle = this.heading + Math.PI;
     this.x = enterX + Math.cos(backAngle) * dist;
     this.y = enterY + Math.sin(backAngle) * dist;
@@ -151,6 +154,10 @@ export class FleetFormation {
                    && this.y > -pad && this.y < this.canvasHeight + pad;
     if (isVisible) this.hasEntered = true;
 
+    // Fade in as formation approaches the visible area
+    const targetEntry = isVisible ? 1 : Math.max(0, this.entryAlpha);
+    this.entryAlpha += (targetEntry - this.entryAlpha) * Math.min(1, dt * 2);
+
     // Only wrap once the formation has entered and then fully left
     if (this.hasEntered) {
       const margin = this.getFormationRadius() + 200;
@@ -165,6 +172,7 @@ export class FleetFormation {
         this.initTurning();
         this.placeOffScreen(Math.random() * 400);
         this.hasEntered = false;
+        this.entryAlpha = 0;
       }
     }
 

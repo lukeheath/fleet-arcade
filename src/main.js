@@ -162,7 +162,7 @@ function draw(time) {
 function drawFormation(ctx, formation, time) {
   const ships = formation.getShipWorldPositions();
   const colors = getFleetColor(formation.name);
-  const alpha = formation.displayAlpha;
+  const alpha = formation.displayAlpha * formation.entryAlpha;
 
   // Draw formation label (stays horizontal / readable)
   if (formation.labelAlpha > 0.05 && alpha > 0.1 && ships.length > 0) {
