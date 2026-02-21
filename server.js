@@ -28,7 +28,7 @@ app.use('/api', createProxyMiddleware({
 app.use(express.static(join(__dirname, 'dist')));
 
 // SPA fallback
-app.get('*', (req, res) => {
+app.get('{*path}', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
