@@ -9,11 +9,15 @@ const port = process.env.PORT || 3000;
 const FLEET_URL = process.env.FLEET_URL || 'https://dogfood.fleetdm.com';
 const FLEET_API_TOKEN = process.env.FLEET_API_TOKEN;
 
-// Proxy /api requests to Fleet, injecting auth header server-side
-app.use('/api', async (req, res) => {
-  const url = `${FLEET_URL}/api${req.url}`;
-  const resp = await fetch(url, {
-    method: req.method,
+// Allowlisted Fleet API routes — only proxy what the app needs
+const ALLOWED_ROUTES = [
+  /^\/api\/v1\/fleet\/hosts\?/, // list hosts (with query params)
+  /^\/api\/v1\/fleet\/hosts\/\d+$/, // single host by ID
+];
+
+async function proxyToFleet(fleetPath, res) {
+  const resp = await fetch(`${FLEET_URL}${fleetPath}`, {
+    method: 'GET',
     headers: {
       'Authorization': `Bearer ${FLEET_API_TOKEN}`,
       'Accept': 'application/json',
@@ -27,6 +31,17 @@ app.use('/api', async (req, res) => {
   });
   const body = await resp.arrayBuffer();
   res.send(Buffer.from(body));
+}
+
+app.use('/api', (req, res) => {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+
+  const fullPath = `/api${req.url}`;
+  if (!ALLOWED_ROUTES.some((r) => r.test(fullPath))) {
+    return res.status(403).json({ error: 'Endpoint not allowed' });
+  }
+
+  proxyToFleet(fullPath, res);
 });
 
 // Serve built static files
