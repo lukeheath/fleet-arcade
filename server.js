@@ -33,8 +33,18 @@ async function proxyToFleet(fleetPath, res) {
   res.send(Buffer.from(body));
 }
 
+const ALLOWED_ORIGINS = [
+  'https://fleet-arcade.onrender.com',
+];
+
 app.use('/api', (req, res) => {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+
+  // Only allow requests originating from the app itself
+  const origin = req.get('origin') || req.get('referer') || '';
+  if (!ALLOWED_ORIGINS.some((o) => origin.startsWith(o))) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
 
   const fullPath = `/api${req.url}`;
   if (!ALLOWED_ROUTES.some((r) => r.test(fullPath))) {
